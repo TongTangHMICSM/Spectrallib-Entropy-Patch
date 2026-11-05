@@ -71,6 +71,8 @@ function Spectrallib.get_forcetrigger_results(card, context)
 			elseif card.config.center.calculate then
 				results.jokers = card.config.center:calculate(card, demicontext) or {}
 			end
+			-- a joker with neither hook yields nothing; don't index the missing table
+			results.jokers = results.jokers or {}
 			results.jokers.card = card
 		end
 

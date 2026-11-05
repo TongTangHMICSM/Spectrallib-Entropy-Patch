@@ -842,14 +842,16 @@ function Spectrallib.find_previous_in_pool(item_key, pool_name, ignore)
     for i in pairs(select_pool) do
         if select_pool[i].key == item_key then
             local ind = i - 1
-            while (
+            -- `ignore` is documented as an index but Entropy passes a key; accept both.
+            while ind >= 1 and (
                 G.GAME.banned_keys[select_pool[ind].key]
                 or select_pool[ind].no_doe
                 or ind == ignore
+                or select_pool[ind].key == ignore
             ) do
                 ind = ind - 1
             end
-            return select_pool[ind].key
+            return ind >= 1 and select_pool[ind].key or nil
         end
     end
     return nil

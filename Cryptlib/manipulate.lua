@@ -30,9 +30,10 @@ Spectrallib.misprintize_value_cap = { --yeahh.. this is mostly just for retrigge
 ---@param max number
 ---@return number
 function Spectrallib.log_random(seed, min, max)
-	local lmin = math.log(min) --Base defaults to e here
-	local lmax = math.log(max)
-	local poll = pseudorandom(seed) * (lmax - lmin) + lmin
+	math.randomseed(seed)
+	local lmin = math.log(min, 2.718281828459045)
+	local lmax = math.log(max, 2.718281828459045)
+	local poll = math.random() * (lmax - lmin) + lmin
 	return math.exp(poll)
 end
 
@@ -46,7 +47,7 @@ end
 ---@field max? number Max for `Spectrallib.log_random`.
 ---@field seed? string|any Used to generate a seed for `Spectrallib.log_random`.
 ---Iterated over each value, overriding Spectrallib.manipulate_value.
----@field func? fun(tbl_value: number, args: table|Spectrallib.manipulate.args, is_big: boolean, value_key: string, full_path: string): number
+---@field func? fun(tbl_value: number, args: table|Spectrallib.manipulate.args, is_big: boolean, value_key: string): number
 ---@field dont_stack? boolean If true, each table value is temporarily reset before manipulation.
 ---@field no_deck_effects? boolean
 ---@field bypass_checks? boolean

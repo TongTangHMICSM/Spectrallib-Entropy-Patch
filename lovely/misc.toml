@@ -116,6 +116,6 @@ target = '''engine/event.lua'''
 pattern = '''        other = {}'''
 position = "after"
 payload = ''',
-slib_desc = {},
+slib_desc = {}
 '''
 match_indent = true
