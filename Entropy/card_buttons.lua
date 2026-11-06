@@ -308,6 +308,14 @@ local extended_card_button_definitions = {
         condition = function (card)
             if not G.pack_cards then return false end
             local in_area = card_in_areas(card, {G.pack_cards})
+            if not in_area then return false end
+            -- If SMODS already knows where this card can be selected to, let its own
+            -- Use/Select pair through untouched. Cryptid's "Code" type sets select_card
+            -- (single Pull button) and must not be replaced by our reserve/use layout.
+            if booster_obj and type(card.selectable_from_pack) == "function"
+                and card:selectable_from_pack(booster_obj) then
+                return false
+            end
             local needs_use_button = Spectrallib.needs_use_button(card)
             local is_consumable = card.ability and card.ability.consumeable
             local poopshit = (
@@ -320,7 +328,7 @@ local extended_card_button_definitions = {
                     and (card.ability.consumeable)
                 )
             )
-            return in_area and needs_use_button and poopshit
+            return needs_use_button and poopshit
         end,
         uidef = function (card)
             -- Keep the Select (pull) button AND give consumables a real Use button. This used
