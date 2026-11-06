@@ -122,8 +122,7 @@ function Spectrallib.get_forcetrigger_results(card, context)
 						random_card.will_be_destroyed = true
 					end
 
-					table.insert(target_cards, selectable_cards)
-					table.remove(selectable_cards, card_key--[[@as integer]])
+					table.insert(target_cards, table.remove(selectable_cards, card_key--[[@as integer]]))
 
 					--Dodgy way of doing this
 					--Basically we need to highlight the cards temporarily to ensure events are created correctly
