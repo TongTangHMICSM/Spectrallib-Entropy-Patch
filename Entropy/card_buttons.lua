@@ -309,8 +309,10 @@ local extended_card_button_definitions = {
             if not G.pack_cards then return false end
             local in_area = card_in_areas(card, {G.pack_cards})
             local needs_use_button = Spectrallib.needs_use_button(card)
+            local is_consumable = card.ability and card.ability.consumeable
             local poopshit = (
                 Spectrallib.needs_pull_button(card)
+                or is_consumable
                 or (
                     not SMODS.OPENED_BOOSTER
                     or not SMODS.OPENED_BOOSTER.draw_hand
@@ -321,12 +323,25 @@ local extended_card_button_definitions = {
             return in_area and needs_use_button and poopshit
         end,
         uidef = function (card)
+            -- Consumables in a pack must keep a real Use button. This used to return a single
+            -- pull button whose label was `Spectrallib.needs_pull_button(card)`, which is nil
+            -- for anything that cannot be pulled - i.e. every consumable. The result was a
+            -- blank, non-functional button and no way to use an inverted consumable straight
+            -- out of a booster pack.
+            local nodes = {}
+            local pull_label = Spectrallib.needs_pull_button(card)
+            if pull_label then
+                nodes[#nodes+1] = {n = G.UIT.R, config = {ref_table = card, r = 0.08, padding = 0.1, align = "bm", minw = 0.5 * card.T.w - 0.15, minh = 0.7 * card.T.h, maxw = 0.7 * card.T.w - 0.15, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, one_press = true, button = "Do you know that this parameter does nothing?", func = card:is_playing_card() and "can_reserve_card_to_deck" or "can_reserve_card", handy_insta_action = 'use' }, nodes = {
+                    {n = G.UIT.T, config = {text = pull_label, colour = G.C.UI.TEXT_LIGHT, scale = 0.55, shadow = true} }
+                }}
+            end
+            if card.ability and card.ability.consumeable then
+                nodes[#nodes+1] = {n = G.UIT.R, config = {ref_table = card, r = 0.08, padding = 0.1, align = "bm", minw = 0.5 * card.T.w - 0.15, minh = 0.3 * card.T.h, maxw = 0.7 * card.T.w - 0.15, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, one_press = true, button = 'use_card', func = 'can_use_consumeable', handy_insta_action = 'use' }, nodes = {
+                    {n = G.UIT.T, config = {text = localize('b_use'), colour = G.C.UI.TEXT_LIGHT, scale = 0.55, shadow = true} }
+                }}
+            end
             return
-            {n = G.UIT.ROOT, config = { padding = -0.1, colour = G.C.CLEAR }, nodes = {
-                {n = G.UIT.R, config = {ref_table = card, r = 0.08, padding = 0.1, align = "bm", minw = 0.5 * card.T.w - 0.15, minh = 0.7 * card.T.h, maxw = 0.7 * card.T.w - 0.15, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, one_press = true, button = "Do you know that this parameter does nothing?", func = card:is_playing_card() and "can_reserve_card_to_deck" or "can_reserve_card", handy_insta_action = 'use' }, nodes = {
-                    {n = G.UIT.T, config = {text = Spectrallib.needs_pull_button(card), colour = G.C.UI.TEXT_LIGHT, scale = 0.55, shadow = true} }
-                }},
-            }}
+            {n = G.UIT.ROOT, config = { padding = -0.1, colour = G.C.CLEAR }, nodes = nodes}
             -- Betmma can't explain it, neither can I
         end
     }
