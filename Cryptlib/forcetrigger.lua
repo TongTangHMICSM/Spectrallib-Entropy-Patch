@@ -200,7 +200,25 @@ end
 ---@return nil
 function Spectrallib.forcetrigger(args)
 	args.context = args.context or {}
-	local card_is_forcetriggerable = Spectrallib.demicolonGetTriggerable(args.card)[1]
+	local card = args.card
+
+	-- A card must never be force-triggered while it is already being force-triggered. Jokers such
+	-- as Swonkssac force-trigger the rightmost Joker, which is themselves when they sit on the
+	-- right edge, so they would recurse forever.
+	--
+	-- This is tracked per card instead of in G.slib_copied_stack because Card:calculate_joker
+	-- (and get_forcetrigger_results) reset that global, which loses the guard partway through a
+	-- nested calculation. Sequential calls still work: the flag is cleared as soon as the call
+	-- returns, so a Joker can be force-triggered any number of times in a row.
+	Spectrallib.forcetrigger_active = Spectrallib.forcetrigger_active
+		or setmetatable({}, { __mode = "k" })
+	local active = Spectrallib.forcetrigger_active
+	if card then
+		if active[card] then return end
+		active[card] = true
+	end
+
+	local card_is_forcetriggerable = Spectrallib.demicolonGetTriggerable(card)[1]
 	if card_is_forcetriggerable then
 		if not Spectrallib.should_skip_animations() and not args.silent then
 			G.E_MANAGER:add_event(Event({
@@ -214,18 +232,20 @@ function Spectrallib.forcetrigger(args)
 
 		if not args.silent then
 			SMODS.calculate_effect{
-				card = args.context.blueprint_card or args.message_card or args.card,
+				card = args.context.blueprint_card or args.message_card or card,
 				colour = args.context.blueprint_card and G.C.BLUE or args.colour or G.C.PURPLE,
 				message = args.message or localize("slib_forcetrigger_ex")
 			}
 		end
 
-		local results = Spectrallib.get_forcetrigger_results(args.card, args.context)
+		local results = Spectrallib.get_forcetrigger_results(card, args.context)
 		if results and results.jokers then
-			results.jokers.card = args.card
-			SMODS.calculate_effect(results.jokers, args.card)
+			results.jokers.card = card
+			SMODS.calculate_effect(results.jokers, card)
 		end
 	end
+
+	if card then active[card] = nil end
 end
 
 ---@param card Card
