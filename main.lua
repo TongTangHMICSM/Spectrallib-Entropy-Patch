@@ -51,7 +51,7 @@ function Game:init_game_object()
     --identical behaviour to cry_banished_keys in cryptid
     ret.slib_banished_keys = {}
     --holds bought decks
-    ret.bought_decks = {}
+    ret.entr_bought_decks = {}
     return ret
 end
 --[[
