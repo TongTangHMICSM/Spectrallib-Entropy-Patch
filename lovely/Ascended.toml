@@ -17,6 +17,7 @@ position = "before"
 payload = '''
 if (G.GAME.current_round.current_hand.cry_asc_num or -2) > (G.GAME.cry_exploit_override and 1 or 0) then
     G.GAME.cry_asc_played = G.GAME.cry_asc_played and G.GAME.cry_asc_played+1 or 1
+    inc_career_stat("slib_asc_hands", 1)
 end
 '''
 match_indent = true
