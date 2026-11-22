@@ -363,7 +363,7 @@ end
 
 function Spectrallib.refresh_backs(atlas, pos)
     for i, c in ipairs(G.playing_cards) do
-        c.children.back = Sprite(c.T.x, c.T.y, c.T.w, c.T.h, G.ASSET_ATLAS[atlas], pos or {x = 0, y = 0})
+        c.children.back = SMODS.create_sprite(c.T.x, c.T.y, c.T.w, c.T.h, atlas, pos or {x = 0, y = 0})
         c.children.back.states.hover = c.states.hover
         c.children.back.states.click = c.states.click
         c.children.back.states.drag = c.states.drag

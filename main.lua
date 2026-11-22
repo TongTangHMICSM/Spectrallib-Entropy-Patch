@@ -4,8 +4,6 @@ SMODS.current_mod.reset_game_globals = function (run_start)
     if run_start then
         -- Value Manipulation API
         Spectrallib.base_values = {}
-        ---@type string[] List of deck keys. 
-        G.GAME.entr_bought_decks = {}
         G.GAME.last_boss_ante = 0
         G.GAME.current_round.current_hand.cry_asc_num = 0
         G.GAME.current_round.current_hand.cry_asc_num_text = ''
@@ -52,6 +50,8 @@ function Game:init_game_object()
     ret.sunlevel = 1
     --identical behaviour to cry_banished_keys in cryptid
     ret.slib_banished_keys = {}
+    --holds bought decks
+    ret.entr_bought_decks = {}
     return ret
 end
 --[[
