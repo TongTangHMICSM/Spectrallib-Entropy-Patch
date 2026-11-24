@@ -660,7 +660,7 @@ function Spectrallib.context_checks(self, card, context, currc, edition)
     elseif type(context_check) == "function" and context_check(card, context, currc, edition) then
         return true
     elseif context_check == true then
-        return true
+        return context[currc]
     end
 end
 
