@@ -524,7 +524,10 @@ Spectrallib.vanilla_forcetrigger_results = {
                 table.insert(eligible_consumables, other_card)
             end
         end
-        if eligible_consumables <= 0 then return end
+        -- `eligible_consumables` is a list: comparing the table itself to 0 throws
+        -- "attempt to compare table with number" the first time a forcetriggered/blueprint'd
+        -- Perkeo fires (e.g. via #forcetrigger). Test its length instead.
+        if #eligible_consumables <= 0 then return end
 
         Spectrallib.event(function ()
             local select_card = pseudorandom_element(eligible_consumables, pseudoseed("perkeo"))
